@@ -1,6 +1,6 @@
 # DevTutor AI - Intelligent Programming Assistant Chatbot
 
-> A multi-mode, full-stack programming tutor powered by **FastAPI** and the **Google Gemini API** (`gemini-2.5-flash`), featuring specialized prompts for **Code Debugging**, **Interactive Tutorials**, and **Technical Q&A**.
+> A multi-mode, full-stack programming tutor powered by **FastAPI** and the **Google Gemini API** (`gemini-3.8-flash`), featuring specialized prompts for **Code Debugging**, **Interactive Tutorials**, and **Technical Q&A**.
 
 ---
 
@@ -14,7 +14,7 @@
    ├── Mode Prompts (app/prompts.py: Debug | Tutorial | Q&A)
    └── Gemini Client (app/gemini_client.py: google-genai SDK)
        ↕ (SSL / API Key)
- Google Gemini API (gemini-2.5-flash)
+ Google Gemini API (gemini-3.8-flash)
 ```
 
 ---
@@ -95,7 +95,7 @@ copy .env.example .env
 Edit `.env`:
 ```env
 GEMINI_API_KEY=AIzaSy...your_actual_key_here
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
 HOST=127.0.0.1
 PORT=8000
 ```
@@ -132,8 +132,8 @@ python -m app.main
 
 ### Top Viva Questions & Model Answers
 
-1. **Why did you choose Gemini Flash (`gemini-2.5-flash`) over other models?**
-   > *Answer:* Gemini 2.5 Flash provides fast response times, high code generation quality, and a generous free-tier quota in Google AI Studio, making it ideal for interactive student tutoring without significant latency.
+1. **Why did you choose Gemini Flash (`gemini-3.8-flash`) over other models?**
+   > *Answer:* Gemini 3.8 Flash provides fast response times, high code generation quality, and a generous free-tier quota in Google AI Studio, making it ideal for interactive student tutoring without significant latency.
 
 2. **What is a System Prompt and why does each mode have its own?**
    > *Answer:* A system prompt instructs the Large Language Model on its persona, output formatting constraints, and strict boundaries. By decoupling the system prompts into `prompts.py`, each mode (Debug, Tutorial, Q&A) enforces a predictable pedagogical structure without requiring the student to format their inputs.
