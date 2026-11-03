@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevTutor AI - Programming Assistant</title>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Highlight.js Stylesheet (atom-one-dark) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body class="dark-theme">
+  <div class="app-container">
+    <!-- Sidebar / Control Panel -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon">⚡</div>
+        <div class="brand-text">
+          <h1>DevTutor AI</h1>
+          <span class="badge">Gemini Flash</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <label class="section-label">Select Mode</label>
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="debug" id="mode-debug">
+            <span class="mode-icon">🐞</span>
+            <div class="mode-info">
+              <span class="mode-title">Debug Code</span>
+              <span class="mode-desc">Find errors, explanation & fix</span>
+            </div>
+          </button>
+          
+          <button class="mode-btn" data-mode="tutorial" id="mode-tutorial">
+            <span class="mode-icon">📚</span>
+            <div class="mode-info">
+              <span class="mode-title">Tutorial Mode</span>
+              <span class="mode-desc">Concepts, examples & practice</span>
+            </div>
+          </button>
+
+          <button class="mode-btn" data-mode="qa" id="mode-qa">
+            <span class="mode-icon">💡</span>
+            <div class="mode-info">
+              <span class="mode-title">Q&A Mode</span>
+              <span class="mode-desc">Direct programming answers</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <label class="section-label" for="language-select">Programming Language</label>
+        <select id="language-select" class="custom-select">
+          <option value="python" selected>Python</option>
+          <option value="javascript">JavaScript / TypeScript</option>
+          <option value="cpp">C++</option>
+          <option value="c">C</option>
+          <option value="java">Java</option>
+          <option value="csharp">C#</option>
+          <option value="go">Go</option>
+          <option value="rust">Rust</option>
+          <option value="sql">SQL</option>
+          <option value="html/css">HTML / CSS</option>
+        </select>
+      </div>
+
+      <div class="sidebar-section">
+        <label class="section-label" for="difficulty-select">Learner Level</label>
+        <select id="difficulty-select" class="custom-select">
+          <option value="beginner" selected>Beginner (Clear & Patient)</option>
+          <option value="intermediate">Intermediate (In-depth)</option>
+          <option value="advanced">Advanced (Deep Dive)</option>
+        </select>
+      </div>
+
+      <div class="sidebar-section options-section">
+        <label class="checkbox-label">
+          <input type="checkbox" id="explain-line-by-line" />
+          <span>Explain code line-by-line</span>
+        </label>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="theme-toggle-row">
+          <span>Dark Mode</span>
+          <button id="theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
+        </div>
+        <button id="clear-chat-btn" class="secondary-btn" title="Clear all conversation messages">
+          🗑️ Clear Conversation
+        </button>
+        <div class="api-status" id="api-status">
+          <span class="status-dot"></span>
+          <span id="status-text">Connecting to backend...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Workspace -->
+    <main class="chat-workspace">
+      <!-- Chat Header -->
+      <header class="chat-header">
+        <div class="header-status">
+          <h2 id="current-mode-title">Debug Mode</h2>
+          <p id="current-mode-subtitle">Paste your buggy code below to get line-by-line error identification, root-cause explanation, and fixed code.</p>
+        </div>
+        <div class="header-actions">
+          <a href="/docs" target="_blank" class="docs-link" title="Open FastAPI Interactive API Documentation">
+            API Docs (Swagger) ↗
+          </a>
+        </div>
+      </header>
+
+      <!-- Message History Container -->
+      <section class="messages-container" id="messages-container">
+        <!-- Welcome Prompt -->
+        <div class="message system-welcome">
+          <div class="message-avatar">⚡</div>
+          <div class="message-content">
+            <h3>Welcome to DevTutor AI!</h3>
+            <p>I am your dedicated programming assistant powered by FastAPI and Google Gemini.</p>
+            <div class="sample-chips" id="sample-chips">
+              <span class="chip-label">Quick test prompts:</span>
+              <button class="chip-btn" data-mode="debug" data-lang="python" data-text="def calculate_average(nums):
+    total = 0
+    for i in range(len(nums) + 1):
+        total += nums[i]
+    return total / len(nums)">🐞 Python Off-by-one Error</button>
+              <button class="chip-btn" data-mode="tutorial" data-lang="cpp" data-text="Pointers and Memory References">📚 Pointers in C++</button>
+              <button class="chip-btn" data-mode="qa" data-lang="javascript" data-text="What is the difference between let, const, and var in modern JavaScript?">💡 let vs const vs var</button>
+              <button class="chip-btn" data-mode="debug" data-lang="python" data-text="if x == 10
+    print('ten')">🐞 Python Syntax Missing Colon</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Input Area -->
+      <footer class="input-container">
+        <!-- Optional Error Message Collapsible for Debug Mode -->
+        <div class="error-input-wrapper" id="error-input-wrapper">
+          <label for="error-message-input">Optional Compiler / Terminal Error:</label>
+          <textarea id="error-message-input" rows="2" placeholder="Paste the compiler error, stack trace, or runtime message here (optional)..."></textarea>
+        </div>
+
+        <div class="main-input-box">
+          <textarea
+            id="user-input"
+            rows="3"
+            placeholder="Paste code or type your programming question here... (Shift + Enter for newline, Enter to send)"
+          ></textarea>
+          
+          <div class="input-actions">
+            <span class="kbd-hint"><kbd>Enter</kbd> to send • <kbd>Shift+Enter</kbd> newline</span>
+            <button id="send-btn" class="send-btn">
+              <span>Send</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Markdown & Syntax Highlighting Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- Main Script -->
+  <script src="/static/script.js"></script>
+</body>
+</html>
+
